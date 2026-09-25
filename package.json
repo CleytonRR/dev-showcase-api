@@ -1,0 +1,11 @@
+{
+  "name": "devshowcase",
+  "version": "1.0.0",
+  "description": "Trabalho realizado para a disciplina de programação backend ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cleyton Furtado, Joely Brito, Matheus Brito",
+  "license": "ISC"
+}
