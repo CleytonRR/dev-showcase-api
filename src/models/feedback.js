@@ -7,12 +7,22 @@ module.exports = sequelize.define(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     author: {
       type: DataTypes.STRING(120),
-      allowNull: false,
+      allowNull: true,
       validate: { notEmpty: true },
     },
     content: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
+      validate: { notEmpty: true },
+    },
+    rating: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: { min: 1, max: 5, isInt: true },
+    },
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
       validate: { notEmpty: true },
     },
   },

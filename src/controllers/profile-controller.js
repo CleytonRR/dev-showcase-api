@@ -13,8 +13,11 @@ exports.create = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const profile = await repository.findById(req.params.id);
-    if (!profile)
-      return res.status(404).json({ error: "Perfil não encontrado" });
+    if (!profile) {
+      const error = new Error("Perfil não encontrado");
+      error.status = 404;
+      return next(error);
+    }
     res.json(profileDto(profile));
   } catch (error) {
     next(error);

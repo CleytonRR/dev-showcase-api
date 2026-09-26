@@ -19,6 +19,9 @@ const projectDto = (project) => ({
   description: project.description,
   url: project.url,
   profileId: project.profileId,
+  likes: project.likes,
+  averageRating: Number(project.averageRating),
+  ratingCount: project.ratingCount,
   ...(project.profile ? { profile: profileDto(project.profile) } : {}),
   ...(project.technologies
     ? { technologies: project.technologies.map(technologyDto) }
@@ -28,8 +31,10 @@ const projectDto = (project) => ({
 
 const feedbackDto = (feedback) => ({
   id: feedback.id,
-  author: feedback.author,
-  content: feedback.content,
+  ...(feedback.author !== null ? { author: feedback.author } : {}),
+  ...(feedback.content !== null ? { content: feedback.content } : {}),
+  ...(feedback.rating !== null ? { rating: feedback.rating } : {}),
+  ...(feedback.comment !== null ? { comment: feedback.comment } : {}),
   projectId: feedback.projectId,
   createdAt: feedback.createdAt,
 });

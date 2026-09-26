@@ -30,8 +30,19 @@ O arquivo `.env` não deve conter segredos compartilhados nem ser enviado ao Git
 | GET    | `/api/projects`                     | Lista projetos com perfil, tecnologias e feedback                                       |
 | POST   | `/api/projects/:projectId/feedback` | Cadastra feedback: `author`, `content`                                                  |
 | GET    | `/api/projects/:projectId/feedback` | Lista feedback do projeto                                                               |
+| POST   | `/api/projects/:id/feedbacks`       | Cadastra avaliação: `rating` (inteiro 1–5), `comment`                                   |
+| GET    | `/api/projects/:id/feedbacks`       | Lista avaliações com nota                                                               |
+| PUT    | `/api/projects/:id/upvote`          | Incrementa em um a quantidade de curtidas                                               |
 
-Entradas inválidas retornam `400`, recursos ausentes `404` e valores únicos duplicados `409`. URLs devem ser válidas quando fornecidas. Projeto e tecnologias são associados em uma transação.
+`GET /api/projects` aceita `technologyId`, `page` (padrão 1) e `limit` (padrão 10, máximo 100). Retorna `{ "data": [...], "pagination": { "page": 1, "limit": 10, "total": 0, "totalPages": 0 } }`.
+
+Avaliações novas devem conter `rating` inteiro de 1 a 5 e `comment` não vazio. A média aritmética é recalculada a cada avaliação e arredondada para duas casas; feedbacks legados sem nota não afetam a média. Cada chamada de upvote incrementa `likes`; como não há autenticação, votos repetidos não são deduplicados. A migração não atribui notas artificiais ao histórico.
+
+Erros seguem `{ "error": { "status": 400, "code": "VALIDATION_ERROR", "message": "...", "details": [] } }`. Entradas inválidas retornam `400`, recursos ausentes `404`, valores únicos duplicados `409`; erros `500` não expõem detalhes internos. URLs devem ser válidas quando fornecidas. Projeto e tecnologias são associados em uma transação.
+
+Documentação interativa: `http://localhost:3000/api-docs`; documento OpenAPI JSON: `http://localhost:3000/api-docs.json`.
+
+Após obter a migração nova, aplique-a com `npm run db:migrate` antes de iniciar uma base já existente.
 
 ## Testes
 

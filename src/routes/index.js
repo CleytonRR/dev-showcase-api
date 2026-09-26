@@ -10,6 +10,8 @@ const {
   feedbackInput,
   idParam,
   projectIdParam,
+  ratedFeedbackInput,
+  projectListQuery,
 } = require("../validators/schemas");
 
 const router = express.Router();
@@ -18,7 +20,15 @@ router.get("/profiles/:id", idParam, profiles.getById);
 router.post("/technologies", technologyInput, technologies.create);
 router.get("/technologies", technologies.list);
 router.post("/projects", projectInput, projects.create);
-router.get("/projects", projects.list);
+router.get("/projects", projectListQuery, projects.list);
+router.put("/projects/:id/upvote", idParam, projects.upvote);
+router.post(
+  "/projects/:id/feedbacks",
+  idParam,
+  ratedFeedbackInput,
+  feedback.createRated,
+);
+router.get("/projects/:id/feedbacks", idParam, feedback.listRated);
 router.post(
   "/projects/:projectId/feedback",
   projectIdParam,

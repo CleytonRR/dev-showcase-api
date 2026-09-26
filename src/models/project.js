@@ -16,6 +16,26 @@ module.exports = sequelize.define(
       allowNull: true,
       validate: { isUrl: true },
     },
+    likes: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      validate: { min: 0 },
+    },
+    averageRating: {
+      type: DataTypes.DECIMAL(4, 2),
+      allowNull: false,
+      defaultValue: 0,
+      field: "average_rating",
+      validate: { min: 0, max: 5 },
+    },
+    ratingCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: "rating_count",
+      validate: { min: 0 },
+    },
   },
   { tableName: "projects", underscored: true },
 );

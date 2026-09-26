@@ -1,13 +1,15 @@
-const { body, param, validationResult } = require("express-validator");
+const { body, param, query, validationResult } = require("express-validator");
 
 const validate = (rules) => [
   ...rules,
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json({ error: "Dados inválidos", details: errors.array() });
+      const error = new Error("Um ou mais campos são inválidos");
+      error.status = 400;
+      error.code = "VALIDATION_ERROR";
+      error.details = errors.array();
+      return next(error);
     }
     next();
   },
@@ -82,6 +84,37 @@ const projectIdParam = validate([
     .toInt(),
 ]);
 
+const ratedFeedbackInput = validate([
+  body("rating")
+    .custom(
+      (value) =>
+        typeof value === "number" &&
+        Number.isInteger(value) &&
+        value >= 1 &&
+        value <= 5,
+    )
+    .withMessage("rating deve ser um inteiro entre 1 e 5"),
+  body("comment").trim().notEmpty().withMessage("Comentário é obrigatório"),
+]);
+
+const projectListQuery = validate([
+  query("technologyId")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("technologyId deve ser um inteiro positivo")
+    .toInt(),
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("page deve ser um inteiro positivo")
+    .toInt(),
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("limit deve ser um inteiro entre 1 e 100")
+    .toInt(),
+]);
+
 module.exports = {
   profileInput,
   technologyInput,
@@ -89,4 +122,6 @@ module.exports = {
   feedbackInput,
   idParam,
   projectIdParam,
+  ratedFeedbackInput,
+  projectListQuery,
 };

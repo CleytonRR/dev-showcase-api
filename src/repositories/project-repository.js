@@ -36,14 +36,68 @@ module.exports = {
         transaction,
       });
     }),
-  findAll: () =>
-    Project.findAll({
+  findAll: async ({ technologyId, page = 1, limit = 10 } = {}) => {
+    const technologyFilter = technologyId
+      ? [
+          {
+            model: Technology,
+            as: "technologies",
+            where: { id: technologyId },
+            through: { attributes: [] },
+            required: true,
+          },
+        ]
+      : [];
+    const total = await Project.count({
+      distinct: true,
+      col: "id",
+      ...(technologyFilter.length ? { include: technologyFilter } : {}),
+    });
+    const projects = await Project.findAll({
       include: [
         { model: Profile, as: "profile" },
-        { model: Technology, as: "technologies", through: { attributes: [] } },
-        { model: Feedback, as: "feedback" },
+        {
+          model: Technology,
+          as: "technologies",
+          ...(technologyId
+            ? { where: { id: technologyId }, required: true }
+            : {}),
+          through: { attributes: [] },
+        },
+        {
+          model: Feedback,
+          as: "feedback",
+          separate: true,
+          order: [["createdAt", "DESC"]],
+        },
       ],
       order: [["createdAt", "DESC"]],
-    }),
+      limit,
+      offset: (page - 1) * limit,
+      distinct: true,
+    });
+    return { projects, total };
+  },
   findById: (id) => Project.findByPk(id),
+  incrementUpvote: async (id) =>
+    sequelize.transaction(async (transaction) => {
+      const project = await Project.findByPk(id, {
+        transaction,
+        lock: transaction.LOCK?.UPDATE,
+      });
+      if (!project) return null;
+      await Project.increment("likes", { by: 1, where: { id }, transaction });
+      return Project.findByPk(id, {
+        transaction,
+        include: [
+          { model: Profile, as: "profile" },
+          {
+            model: Technology,
+            as: "technologies",
+            through: { attributes: [] },
+          },
+          { model: Feedback, as: "feedback", separate: true },
+        ],
+      });
+    }),
 };
