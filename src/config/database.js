@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const postgresOptions = require("./postgres-options");
 
 const options =
   process.env.NODE_ENV === "test"
@@ -6,13 +7,7 @@ const options =
     : {
         dialect: "postgres",
         logging: process.env.NODE_ENV === "development" ? console.log : false,
-        ...(process.env.DATABASE_SSL === "true"
-          ? {
-              dialectOptions: {
-                ssl: { require: true, rejectUnauthorized: false },
-              },
-            }
-          : {}),
+        dialectOptions: postgresOptions(),
       };
 
 const sequelize =

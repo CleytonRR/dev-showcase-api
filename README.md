@@ -15,7 +15,7 @@ API REST em Node.js, Express e Sequelize para perfis de desenvolvedores, projeto
 4. Aplique o esquema com `npm run db:migrate`.
 5. Inicie em desenvolvimento com `npm run dev` ou em produção com `npm start`.
 
-O arquivo `.env` não deve conter segredos compartilhados nem ser enviado ao Git. Use `DATABASE_SSL=true` se o provedor PostgreSQL exigir TLS.
+O arquivo `.env` não deve conter segredos compartilhados nem ser enviado ao Git. TLS é ativado automaticamente para endereços PostgreSQL remotos; conexões locais (`localhost`, `127.0.0.1` ou `::1`) usam conexão sem TLS. `DATABASE_SSL=true` força TLS e `DATABASE_SSL=false` o desativa explicitamente.
 
 ## Endpoints
 
